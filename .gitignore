@@ -1,0 +1,12 @@
+node_modules/
+.validation-deps/
+dist/
+coverage/
+config/business.json
+data/
+reports/
+tmp/
+*.local.json
+*.log
+.DS_Store
+Thumbs.db

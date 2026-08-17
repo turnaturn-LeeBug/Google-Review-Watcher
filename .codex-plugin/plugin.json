@@ -1,0 +1,20 @@
+{
+  "name": "review-watcher",
+  "version": "0.1.0",
+  "description": "Collect new Google reviews read-only and export them to XLSX.",
+  "author": {
+    "name": "Review Watcher contributors"
+  },
+  "license": "MIT",
+  "keywords": ["google-reviews", "xlsx", "deduplication", "browser"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Review Watcher",
+    "shortDescription": "Collect new Google reviews into XLSX.",
+    "longDescription": "A read-only workflow for collecting Google Business reviews, detecting unseen reviews, and exporting new entries to XLSX.",
+    "developerName": "Review Watcher contributors",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read"],
+    "defaultPrompt": ["Check my configured business for new Google reviews.", "Export unseen Google reviews to XLSX."]
+  }
+}
