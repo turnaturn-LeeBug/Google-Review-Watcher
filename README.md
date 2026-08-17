@@ -10,23 +10,23 @@ Review Watcher is an independent open-source project and is not affiliated with,
 - Node.js 20 or newer
 - pnpm 10 or newer
 
-## Install
+## Installation
 
 ```bash
 git clone <your-review-watcher-repository-url>
 cd Review-Watcher
-pnpm install
+pnpm install --frozen-lockfile
 pnpm build
 pnpm test
 ```
 
-### Install in Codex
+## Codex plugin and skill setup
 
-The repository follows the current Codex plugin convention: `.codex-plugin/plugin.json` at the plugin root and `skills/review-watcher/SKILL.md` under `skills/`.
+The complete plugin is contained in this repository. Its manifest is `.codex-plugin/plugin.json`, and its reusable skill is `skills/review-watcher/SKILL.md`. No sibling directory is required at runtime.
 
-For a local marketplace, place this repository at `<marketplace-root>/plugins/review-watcher`, add a matching local plugin entry to `<marketplace-root>/marketplace.json`, register that marketplace with `codex plugin marketplace add <marketplace-root>`, and install with `codex plugin add review-watcher@<marketplace-name>`. Start a new Codex task after installation so the skill is discovered.
+For a local marketplace, place the whole repository at `<marketplace-root>/plugins/review-watcher`, add a matching local plugin entry to `<marketplace-root>/marketplace.json`, register that marketplace with `codex plugin marketplace add <marketplace-root>`, and install with `codex plugin add review-watcher@<marketplace-name>`. Start a new Codex task after installation so the skill is discovered.
 
-You can also copy `skills/review-watcher` into your Codex skills directory if you only want the reusable skill instructions; keep the repository available for its CLI.
+For skill-only setup, copy the complete `skills/review-watcher` directory into your Codex skills directory. Keep this repository available because the skill invokes its CLI for fingerprinting, state, and XLSX export.
 
 ## Configure a business
 
@@ -44,6 +44,18 @@ Edit the local, gitignored file:
 ```
 
 No business is hard-coded. Keep real business configuration local.
+
+## Try the sanitized sample fixture
+
+`fixtures/sample-reviews.json` contains fictional business, reviewer, and review data suitable for public validation. From a fresh checkout, run:
+
+```bash
+pnpm review:process fixtures/sample-reviews.json
+pnpm review:status
+pnpm review:process fixtures/sample-reviews.json
+```
+
+The first processing run reports `3 new reviews` and creates `reports/example-lantern-cafe-reviews-YYYY-MM-DD.xlsx`. The second processing run reports exactly `0 new reviews` and does not create another report. The generated state and report remain local and are ignored by Git.
 
 ## Run a review check
 
@@ -68,7 +80,7 @@ Seen fingerprints are stored in the inspectable `data/seen-reviews.json`. State 
 
 - Google interaction is strictly read-only. Review Watcher must never reply, like, report, post, edit, delete, or change business information.
 - The plugin does not require a Google API key, cloud database, cookies, or saved Google account data.
-- Business configuration, collected JSON, state, and reports are local and gitignored.
+- Local business configuration, real review inputs, fingerprint state, reports, cookies, authentication data, browser profiles, and session data are gitignored.
 - Never commit secrets, cookies, account data, private configuration, or generated reports.
 - If Google presents a CAPTCHA, login wall, unsupported structure, or unreliable page, collection stops rather than inventing data.
 
@@ -78,7 +90,8 @@ Seen fingerprints are stored in the inspectable `data/seen-reviews.json`. State 
 - Google may rate-limit access or require consent/sign-in depending on region and session.
 - Review dates remain blank when Google only provides a relative time that cannot be reliably converted.
 - Fingerprints cannot distinguish two reviews that have the same business, reviewer, stars, and text.
-- v0.1 has no scheduler, email, GUI, multi-business dashboard, replies, or cloud storage.
+- Rating-only reviews use an empty review-text component. Two rating-only reviews from the same reviewer for the same business with the same star rating therefore produce the same fingerprint, even if Google displays different dates.
+- v0.1.1 has no scheduler, email, GUI, multi-business dashboard, replies, or cloud storage.
 
 ## Troubleshooting
 

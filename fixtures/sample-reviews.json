@@ -1,0 +1,29 @@
+[
+  {
+    "businessName": "Example Lantern Cafe",
+    "source": "google",
+    "reviewerName": "Avery Sample",
+    "stars": 5,
+    "relativeTime": "2 days ago",
+    "reviewText": "Friendly service and a bright, welcoming dining room.",
+    "capturedAt": "2026-08-17T12:00:00.000Z"
+  },
+  {
+    "businessName": "Example Lantern Cafe",
+    "source": "google",
+    "reviewerName": "Morgan Fixture",
+    "stars": 4,
+    "relativeTime": "a week ago",
+    "reviewText": "The fictional sample meal arrived quickly and tasted great.",
+    "capturedAt": "2026-08-17T12:00:00.000Z"
+  },
+  {
+    "businessName": "Example Lantern Cafe",
+    "source": "google",
+    "reviewerName": "Riley Example",
+    "stars": 5,
+    "relativeTime": "2 weeks ago",
+    "reviewText": "A clean public fixture review for validating the report workflow.",
+    "capturedAt": "2026-08-17T12:00:00.000Z"
+  }
+]
