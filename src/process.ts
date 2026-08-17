@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { fingerprintReview } from "./fingerprint.js";
+import { parseGoogleDisplayedTime } from "./date.js";
+import { fingerprintReview, reviewIdentity } from "./fingerprint.js";
 import { writeReport } from "./report.js";
 import { readState, writeStateAtomic } from "./state.js";
 import type { ProcessResult, ReviewInput, ReviewRecord } from "./types.js";
@@ -37,7 +38,9 @@ export async function processReviews(inputs: ReviewInput[], options: ProcessOpti
     const fingerprint = fingerprintReview(input);
     if (seen.has(fingerprint) || batch.has(fingerprint)) continue;
     batch.add(fingerprint);
-    records.push({ ...input, source: "google", capturedAt: input.capturedAt ?? now.toISOString(), fingerprint });
+    const capturedAt = input.capturedAt ?? now.toISOString();
+    const date = parseGoogleDisplayedTime(input.googleDisplayedTime ?? input.relativeTime, new Date(capturedAt));
+    records.push({ ...input, ...date, source: "google", capturedAt, fingerprint, reviewIdentity: reviewIdentity(input) });
   }
   if (records.length === 0) return { inputCount: inputs.length, newCount: 0, reportPath: null, records: [] };
   if (new Set(records.map((record) => record.businessName)).size !== 1)

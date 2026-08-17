@@ -1,45 +1,49 @@
 ---
 name: review-watcher
-description: Collect current Google Business or Google Maps reviews through the available browser, detect unseen reviews with local state, and export only new reviews to XLSX. Use when a user asks to check, collect, monitor, deduplicate, or report on Google reviews for a configured business URL.
+description: Check one or more configured Google Business or Google Maps listings through the available browser, enforce per-business minimum intervals, detect unseen reviews, and export new reviews to independent XLSX reports. Use when a user asks to check, monitor, deduplicate, schedule eligibility for, or report on configured Google reviews.
 ---
 
 # Review Watcher
 
-Perform a strictly read-only Google review check and hand normalized records to the bundled CLI.
+Perform strictly read-only Google review checks and hand normalized records to the bundled CLI.
 
-## Preconditions
+## Select eligible businesses
 
-1. Read `config/business.json`; if absent, ask the user to copy `config/business.example.json` and supply `businessName` and `googleUrl`.
-2. Validate that `googleUrl` uses HTTPS and points to a Google Business or Maps page.
-3. Use the available browser capability and its required setup instructions. Never use a connector that cannot expose the visible Google Reviews interface.
+1. Read `config/business.json`; if absent, ask the user to copy `config/business.example.json` and configure the `businesses` array.
+2. Run `pnpm review:eligibility` before opening Google.
+3. Check only enabled businesses reported as `ELIGIBLE`. Do not browse for a business reported as `SKIPPED_NOT_ELIGIBLE` or `DISABLED`.
+4. For a user-selected business, use its stable `id` with `pnpm review:check --business <id>`.
 
 ## Collect reviews
 
-1. Open the configured URL.
-2. Open the visible Reviews interface.
-3. Choose the Newest sort order and verify it is active when the UI exposes sorting.
-4. Read from newest downward. Scroll only as needed.
-5. For each visible review capture `reviewerName`, integer `stars` (or `null` only when unavailable), Google's displayed relative or absolute time, and the full original review text.
-6. Expand truncated text with a read-only “More” control when available. If Google displays a translation and exposes “See original,” use the original text when practical.
-7. Preserve text verbatim. Do not translate, summarize, infer, or fabricate it.
-8. Stop at a reliable incremental boundary: two or more consecutive already-seen fingerprints, or the end of the accessible review list. On a first run, collect the user-requested amount; if none is specified, collect at least the newest 10 accessible reviews.
+For each eligible business independently:
 
-Never reply, like, report, edit, delete, post, change business information, or perform any other Google write action. If a login wall, CAPTCHA, unsupported structure, or browser limitation prevents reliable collection, stop and report the exact blocker.
+1. Open its configured HTTPS Google Business or Maps URL.
+2. Open Reviews and choose Newest. Verify that Newest is active.
+3. Read newest downward and capture reviewer name, integer stars or `null`, Google's original displayed time, original review text, and reviewer profile URL when visible.
+4. Inspect read-only DOM attributes for a stable Google review identifier such as an explicit review-id data attribute. Capture it as `googleReviewId` only when the page exposes a stable value tied to that review; never invent or derive one from list position.
+5. Expand truncated text with a read-only More control. Prefer original text when Google exposes See original.
+6. Preserve text and displayed time verbatim. Do not translate, summarize, infer, or fabricate.
+7. Stop at two consecutive known identities or the end of the accessible list. On a first run, collect the requested amount or at least the newest 10 accessible reviews.
 
-## Normalize and process
+Never reply, react, like, report, edit, delete, post, change business information, or perform any Google write action. Stop and report a login wall, CAPTCHA, unsupported structure, or browser limitation. Continue other configured businesses after one business fails.
 
-Create a local gitignored JSON array with this shape:
+## Process a business
+
+Save each business to a separate gitignored file such as `tmp/<business-id>-reviews.local.json`:
 
 ```json
-[{"businessName":"Configured name","source":"google","reviewerName":"Name","stars":5,"relativeTime":"2 days ago","reviewText":"Original text","capturedAt":"2026-01-01T00:00:00.000Z"}]
+[{"businessId":"example-business","businessName":"Example Business","source":"google","reviewerName":"Name","stars":5,"googleDisplayedTime":"2 days ago","relativeTime":"2 days ago","googleReviewId":null,"reviewText":"Original text","capturedAt":"2026-01-01T00:00:00.000Z"}]
 ```
 
-Use one business per file. Then run:
+Then run:
 
 ```bash
-pnpm review:process <local-reviews.json>
+pnpm review:check --business <business-id> --reviews tmp/<business-id>-reviews.local.json
 ```
 
-The CLI computes SHA-256 fingerprints from normalized business name, reviewer name, stars, and review text. It intentionally excludes time fields, exports only unseen reviews, and commits local state only after XLSX export succeeds. Report the new-review count and report path. If the CLI prints `0 new reviews`, do not create another report.
+Run `pnpm review:check` after preparing the default `tmp/<business-id>-reviews.local.json` file for every eligible enabled business. Use `pnpm review:status` for per-business state.
 
-Use `pnpm review:status` to inspect the count of persisted fingerprints. Treat `pnpm review:reset` as destructive and run it only when the user explicitly asks to discard deduplication history.
+The CLI prefers `googleReviewId` for identity. Without it, it uses a SHA-256 fallback. Rating-only fallbacks include reviewer profile and displayed time when available, but remain imperfect. The CLI writes state only after report creation and optional email delivery both succeed. Report `SUCCESS`, `SKIPPED_NOT_ELIGIBLE`, or the exact failure per business.
+
+Keep email disabled unless a delivery provider implementing the repository interface has been configured. Never claim email was sent when no provider exists.

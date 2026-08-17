@@ -16,11 +16,15 @@ export async function writeReport(path: string, records: ReviewRecord[]): Promis
     { header: "Review Text", key: "reviewText", width: 64 },
     { header: "Fingerprint", key: "fingerprint", width: 68 },
     { header: "Captured At", key: "capturedAt", width: 26 },
-    { header: "Source", key: "source", width: 12 }
+    { header: "Source", key: "source", width: 12 },
+    { header: "Derived Review Date", key: "derivedReviewDate", width: 20 },
+    { header: "Date Confidence", key: "dateConfidence", width: 18 },
+    { header: "Google Review ID", key: "googleReviewId", width: 28 },
+    { header: "Review Identity", key: "reviewIdentity", width: 72 }
   ];
-  for (const record of records) sheet.addRow({ date: "", ...record });
+  for (const record of records) sheet.addRow({ date: record.derivedReviewDate ?? "", ...record });
   sheet.getRow(1).font = { bold: true };
   sheet.getColumn("reviewText").alignment = { wrapText: true, vertical: "top" };
-  sheet.autoFilter = { from: "A1", to: "H1" };
+  sheet.autoFilter = { from: "A1", to: "L1" };
   await workbook.xlsx.writeFile(path);
 }
