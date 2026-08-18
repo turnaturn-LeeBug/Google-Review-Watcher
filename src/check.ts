@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { readBusinessState, writeBusinessStateAtomic } from "./business-state.js";
 import { parseGoogleDisplayedTime } from "./date.js";
-import { DisabledEmailDelivery, type EmailDelivery } from "./email.js";
+import { createEmailDelivery, type EmailDelivery } from "./email.js";
 import { getEligibility } from "./eligibility.js";
 import { fingerprintReview, reviewIdentity } from "./fingerprint.js";
 import { writeReport } from "./report.js";
@@ -43,7 +43,8 @@ export async function runBusiness(business: BusinessConfig, inputs: ReviewInput[
   if (eligibility.status !== "ELIGIBLE") return { businessId: business.id, status: eligibility.status,
     newCount: 0, reportPath: null, lastSuccessfulRun: state.lastSuccessfulRun };
   try {
-    const normalized = normalizeBusinessReviews(business, inputs, now);
+    const normalized = normalizeBusinessReviews(business, inputs, now).filter((record) =>
+      !business.startDate || !record.derivedReviewDate || record.derivedReviewDate >= business.startDate);
     const seen = new Set(state.identities);
     const batch = new Set<string>();
     const records = normalized.filter((record) => {
@@ -60,7 +61,7 @@ export async function runBusiness(business: BusinessConfig, inputs: ReviewInput[
       await (options.reportWriter ?? writeReport)(reportPath, records);
     }
     const emailConfig = business.email ?? options.emailConfig ?? { enabled: false };
-    await (options.emailDelivery ?? new DisabledEmailDelivery()).deliver({ business, config: emailConfig, reportPath, records });
+    await (options.emailDelivery ?? createEmailDelivery(emailConfig)).deliver({ business, config: emailConfig, reportPath, records, runDate: now });
     const completedAt = now.toISOString();
     await writeBusinessStateAtomic(statePath, { version: 2, businessId: business.id,
       fingerprints: [...state.fingerprints, ...records.map((item) => item.fingerprint)],

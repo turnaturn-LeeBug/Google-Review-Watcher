@@ -6,6 +6,7 @@ config/business.json
 config/*.local.json
 .env
 .env.*
+!.env.example
 data/
 reports/
 tmp/

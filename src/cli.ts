@@ -6,6 +6,7 @@ import { runBusiness } from "./check.js";
 import { readConfig } from "./config.js";
 import { getEligibility } from "./eligibility.js";
 import { processReviewFile } from "./process.js";
+import { createSetupDraft, editBusinessSettings, persistSetup } from "./setup.js";
 import type { BusinessConfig, BusinessRunResult, ReviewInput } from "./types.js";
 
 const args = process.argv.slice(2);
@@ -53,6 +54,30 @@ try {
     const result = await processReviewFile(path);
     console.log(`${result.newCount} new reviews`);
     if (result.reportPath) console.log(`Report: ${result.reportPath}`);
+  } else if (command === "config") {
+    const action = args[1]; const path = option("--config") ?? "config/business.json";
+    if (action === "show") console.log(JSON.stringify(await readConfig(path), null, 2));
+    else if (action === "add") {
+      const businessName = option("--name"); const googleUrl = option("--url"); const startDate = option("--start-date");
+      const interval = Number(option("--interval")); const recipients = option("--email")?.split(",").map((item) => item.trim()).filter(Boolean) ?? [];
+      if (!businessName || !googleUrl || !startDate) throw new Error("Config add requires --name, --url, --start-date, and --interval.");
+      const draft = createSetupDraft({ businessName, googleUrl, startDate, minimumIntervalDays: interval,
+        email: recipients.length ? { enabled: true, provider: "smtp", recipients,
+          sendWhenNoNewReviews: args.includes("--send-when-empty") } : { enabled: false } });
+      const saved = await persistSetup(path, draft, args.includes("--confirm")); console.log(`Saved ${saved.id}`);
+    } else if (action === "edit") {
+      const id = option("--business"); if (!id) throw new Error("Config edit requires --business id.");
+      const recipients = option("--email");
+      const edited = await editBusinessSettings(path, id, {
+        googleUrl: option("--url"), startDate: option("--start-date"),
+        minimumIntervalDays: option("--interval") === undefined ? undefined : Number(option("--interval")),
+        enabled: args.includes("--enable") ? true : args.includes("--disable") ? false : undefined,
+        email: recipients === undefined ? undefined : recipients === "disabled" ? { enabled: false } : {
+          enabled: true, provider: "smtp", recipients: recipients.split(",").map((item) => item.trim()).filter(Boolean),
+          sendWhenNoNewReviews: args.includes("--send-when-empty") }
+      });
+      console.log(`Updated ${edited.id}`);
+    } else throw new Error("Usage: pnpm review:configure -- show|add|edit ...");
   } else if (command === "check") {
     const config = await readConfig(option("--config"));
     const requested = option("--business");
@@ -78,7 +103,7 @@ try {
   } else if (command === "reset") {
     await rm(resolve("data/seen-reviews.json"), { force: true });
     console.log("Legacy review state reset");
-  } else throw new Error("Usage: pnpm review:process <reviews-json> | pnpm review:check [--business id] [--reviews path] | pnpm review:status | pnpm review:eligibility | pnpm review:reset");
+  } else throw new Error("Usage: pnpm review:process <reviews-json> | pnpm review:configure -- show|add|edit | pnpm review:check [--business id] [--reviews path] | pnpm review:status | pnpm review:eligibility | pnpm review:reset");
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;

@@ -29,14 +29,16 @@ export type DateConfidence = "exact" | "derived-day" | "derived-week" | "unknown
 
 export interface EmailConfig {
   enabled: boolean;
-  provider?: string;
+  provider?: "smtp";
   recipients?: string[];
+  sendWhenNoNewReviews?: boolean;
 }
 
 export interface BusinessConfig {
   id: string;
   businessName: string;
   googleUrl: string;
+  startDate?: string;
   minimumIntervalDays: number;
   enabled: boolean;
   email?: EmailConfig;

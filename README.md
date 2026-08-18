@@ -6,6 +6,24 @@ Review Watcher is not related to Altus or RelayMinders. It is not affiliated wit
 
 Current development version: `0.2.0-dev`. This is not a tagged public release.
 
+## Quick Start
+
+After installing the plugin, normal setup is conversational. Tell Codex:
+
+```text
+Set up Review Watcher
+```
+
+Codex verifies the Google listing read-only, asks for a collection start date, interval, and optional report recipients, displays a complete summary, and saves only after you answer Confirm. Other supported intents are:
+
+```text
+Review Watcher settings
+Add another business
+Check my reviews
+```
+
+Settings edits change only the selected field. When several businesses are enabled, `Check my reviews` asks whether to check all or select one.
+
 ## Requirements and installation
 
 - Codex with a supported browser capability
@@ -22,7 +40,7 @@ pnpm test
 
 The complete plugin is contained in this repository: `.codex-plugin/plugin.json` is the manifest and `skills/review-watcher/SKILL.md` is the reusable skill. For a local marketplace, place the whole repository at `<marketplace-root>/plugins/review-watcher`, add a matching local marketplace entry, register the marketplace, and install `review-watcher@<marketplace-name>`. Start a new Codex task after installation.
 
-## Configure businesses
+## Advanced manual configuration
 
 Copy `config/business.example.json` to the gitignored `config/business.json` and edit it:
 
@@ -33,6 +51,7 @@ Copy `config/business.example.json` to the gitignored `config/business.json` and
       "id": "example-business",
       "businessName": "Example Business",
       "googleUrl": "https://www.google.com/maps/place/example",
+      "startDate": "2026-08-17",
       "minimumIntervalDays": 3,
       "enabled": true
     }
@@ -44,6 +63,12 @@ Copy `config/business.example.json` to the gitignored `config/business.json` and
 ```
 
 Each business needs a unique, stable lowercase kebab-case `id`. State lives under `data/businesses/<id>/state.json`, and reports live under `reports/<id>/`. `minimumIntervalDays` defaults to 3. An omitted `enabled` value defaults to true.
+
+`startDate` is the inclusive historical collection boundary. Reviews with a known derived date before it are excluded. The conversational setup command persists configuration atomically and requires explicit confirmation:
+
+```bash
+pnpm review:configure -- show
+```
 
 The v0.1.1 single-business shape remains readable and is normalized to the id `default-business` unless an `id` is supplied.
 
@@ -92,9 +117,32 @@ The rating-only fallback is necessarily imperfect: two rating-only reviews with 
 
 Reports contain only new reviews and are written independently to `reports/<business-id>/<business-slug>-reviews-YYYY-MM-DD.xlsx`. Columns retain the v0.1.1 fields and add derived date, confidence, Google review ID, and review identity. Reports include a bold header, wrapped review text, frozen header, filter, and readable widths.
 
-## Email architecture
+## SMTP email delivery
 
-Email is disabled by default and no provider dependency is bundled. `src/email.ts` defines the delivery interface and context for a future adapter. Enabling email without configuring an implementation fails the business run and does not update `lastSuccessfulRun`. Email configuration, recipients, credentials, and provider secrets belong only in local gitignored configuration.
+Email remains disabled by default. Enable SMTP per business using only non-secret settings:
+
+```json
+"email": {
+  "enabled": true,
+  "provider": "smtp",
+  "recipients": ["reports@example.com"],
+  "sendWhenNoNewReviews": false
+}
+```
+
+Copy `.env.example` values into your local environment or secret manager:
+
+```text
+REVIEW_WATCHER_SMTP_HOST
+REVIEW_WATCHER_SMTP_PORT
+REVIEW_WATCHER_SMTP_USER
+REVIEW_WATCHER_SMTP_PASSWORD
+REVIEW_WATCHER_SMTP_FROM
+```
+
+Never put SMTP credentials in `config/business.json`. A successful email includes the new-review count, average rating, count by star rating, report filename, and XLSX attachment. `sendWhenNoNewReviews` defaults to false; when true, a zero-review summary is sent without an attachment.
+
+SMTP is transactional with state: a send failure reports `FAILED` and does not advance identities or `lastSuccessfulRun`. The already-created local XLSX may remain for diagnosis and retry.
 
 ## State safety and privacy
 
@@ -132,7 +180,7 @@ The first clean run reports 3 new reviews; the second reports exactly 0 new revi
 - Rating-only fallback identity remains imperfect without a stable Google review ID.
 - Relative-date derivation is calendar-day approximation in UTC and is clearly marked as derived.
 - The CLI coordinates local inputs produced by Codex's browser workflow; it is not a standalone Google scraper.
-- Email has an interface and failure boundary but no bundled provider implementation.
+- SMTP availability, authentication policy, message limits, and attachment limits depend on the operator's provider.
 - There is no GUI, fixed-time scheduler, cloud database, or Google write capability.
 
 ## Development

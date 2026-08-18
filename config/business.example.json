@@ -4,6 +4,7 @@
       "id": "example-business",
       "businessName": "Example Business",
       "googleUrl": "https://www.google.com/maps/place/example",
+      "startDate": "2026-08-17",
       "minimumIntervalDays": 3,
       "enabled": true
     },
@@ -11,11 +12,13 @@
       "id": "second-example",
       "businessName": "Second Example Business",
       "googleUrl": "https://www.google.com/maps/place/second-example",
+      "startDate": "2026-08-10",
       "minimumIntervalDays": 3,
       "enabled": false
     }
   ],
   "email": {
-    "enabled": false
+    "enabled": false,
+    "sendWhenNoNewReviews": false
   }
 }
