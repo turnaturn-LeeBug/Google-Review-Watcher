@@ -4,11 +4,23 @@ Review Watcher is an independent open-source Codex plugin that performs read-onl
 
 Review Watcher is not related to Altus or RelayMinders. It is not affiliated with, endorsed by, or sponsored by Google.
 
-Current release candidate: `0.2.0-rc.1`. It is not tagged or published yet.
+Current stable version: `0.2.0`.
 
 ## Quick Start
 
-After installing the plugin, normal setup is conversational. Tell Codex:
+The normal user workflow is conversational:
+
+1. Install Review Watcher using the repository instructions below.
+2. Tell Codex `Set up Review Watcher`.
+3. Paste the Google Business or Google Maps URL.
+4. Confirm the business name and address Codex shows you.
+5. Select the review start date.
+6. Select the minimum check interval.
+7. Configure report email recipients or skip email.
+8. Review the summary and confirm the settings.
+9. Tell Codex `Check my reviews`.
+
+Start setup with:
 
 ```text
 Set up Review Watcher

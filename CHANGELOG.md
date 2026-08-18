@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.2.0
+
+### Added
+
+- Conversational setup wizard
+- Multi-business monitoring
+- Configurable review start date
+- Configurable minimum check interval
+- Improved Google review identity handling
+- Derived review date support
+- Optional SMTP XLSX delivery
+- `sendWhenNoNewReviews`
+- Transaction-safe state updates
+
+### Changed
+
+- Stable Google review IDs are preferred when available
+- Business state is isolated per business
+- Normal setup no longer requires manual JSON editing
+- Google displayed timestamps are preserved separately from derived dates
+
+### Security
+
+- SMTP credentials remain environment-only
+- Google interactions remain strictly read-only
+- Private configuration, state, reviews, reports, cookies, sessions, and `.env` remain ignored
+
 ## v0.2.0-rc.1
 
 - Conversational setup wizard

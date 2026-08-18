@@ -1,6 +1,6 @@
 {
   "name": "review-watcher",
-  "version": "0.2.0-rc.1",
+  "version": "0.2.0",
   "description": "Collect new Google reviews read-only and export them to XLSX.",
   "author": {
     "name": "Review Watcher contributors"
