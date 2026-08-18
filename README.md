@@ -4,7 +4,7 @@ Review Watcher is an independent open-source Codex plugin that performs read-onl
 
 Review Watcher is not related to Altus or RelayMinders. It is not affiliated with, endorsed by, or sponsored by Google.
 
-Current development version: `0.2.0-dev`. This is not a tagged public release.
+Current release candidate: `0.2.0-rc.1`. It is not tagged or published yet.
 
 ## Quick Start
 
@@ -22,7 +22,7 @@ Add another business
 Check my reviews
 ```
 
-Settings edits change only the selected field. When several businesses are enabled, `Check my reviews` asks whether to check all or select one.
+`Review Watcher settings` changes only the selected field. `Add another business` preserves existing businesses and creates independent state and report paths. When several businesses are enabled, `Check my reviews` asks whether to check all or select one.
 
 ## Requirements and installation
 
@@ -62,7 +62,7 @@ Copy `config/business.example.json` to the gitignored `config/business.json` and
 }
 ```
 
-Each business needs a unique, stable lowercase kebab-case `id`. State lives under `data/businesses/<id>/state.json`, and reports live under `reports/<id>/`. `minimumIntervalDays` defaults to 3. An omitted `enabled` value defaults to true.
+Each business needs a unique, stable lowercase kebab-case `id`. State lives under `data/businesses/<id>/state.json`, and reports live under `reports/<id>/`. Businesses are checked and committed independently, so one failure cannot corrupt another business. An omitted `enabled` value defaults to true.
 
 `startDate` is the inclusive historical collection boundary. Reviews with a known derived date before it are excluded. The conversational setup command persists configuration atomically and requires explicit confirmation:
 
@@ -83,7 +83,7 @@ pnpm review:check
 pnpm review:check --business example-business
 ```
 
-When elapsed time is less than `minimumIntervalDays`, the result is `SKIPPED_NOT_ELIGIBLE`. Equality is eligible. `lastSuccessfulRun` changes only after browser collection, processing, XLSX creation, and enabled email delivery all succeed.
+`minimumIntervalDays` defaults to 3 and is evaluated from each business's `lastSuccessfulRun` when a command starts. When elapsed time is less than the configured interval, the result is `SKIPPED_NOT_ELIGIBLE`; equality or a greater elapsed time is eligible. This is an eligibility interval, not fixed clock-time scheduling. `lastSuccessfulRun` changes only after browser collection, processing, XLSX creation, and enabled email delivery all succeed.
 
 Codex first checks eligibility, then performs the browser collection described by the skill. Save each business's records in a separate gitignored file, normally `tmp/<business-id>-reviews.local.json`. Process a selected business explicitly when needed:
 
