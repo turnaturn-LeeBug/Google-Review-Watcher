@@ -1,10 +1,13 @@
 # Changelog
 
-## v0.2.1-dev
+## v0.2.1
 
-- Added conversational stable-version checks and confirmation-gated updates
-- Added dirty-source protection and preservation guarantees for ignored user data
+- Added conversational version checking
+- Added conversational stable updates with stable-only release detection
+- Added dirty-tree protection and user-data preservation
+- Added explicit confirmation before an update changes versions
 - Added `UPDATE_WITH_CODEX.md` for Codex-guided updates
+- Added full post-update build, test, plugin, and skill validation
 
 ## v0.2.0
 

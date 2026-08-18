@@ -4,7 +4,7 @@ Review Watcher is an independent open-source Codex plugin that performs read-onl
 
 Review Watcher is not related to Altus or RelayMinders. It is not affiliated with, endorsed by, or sponsored by Google.
 
-Current development version: `0.2.1-dev`. Latest stable version: `0.2.0`.
+Current stable version: `0.2.1`.
 
 ## Quick Start
 

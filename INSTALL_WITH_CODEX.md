@@ -2,7 +2,7 @@
 
 These instructions are for Codex. The user should be able to provide this file and say: `Install Review Watcher for me.`
 
-Install the stable `v0.2.0` release safely. Report every command result and stop on a real blocker; never fabricate installation, validation, or discovery success.
+Install the stable `v0.2.1` release safely. Report every command result and stop on a real blocker; never fabricate installation, validation, or discovery success.
 
 ## 1. Inspect before changing anything
 
@@ -27,12 +27,12 @@ Clone the public repository into the inspected empty target directory:
 git clone https://github.com/turnaturn-LeeBug/Google-Review-Watcher.git
 cd Google-Review-Watcher
 git fetch --tags --force
-git show-ref --verify refs/tags/v0.2.0
-git checkout --detach v0.2.0
+git show-ref --verify refs/tags/v0.2.1
+git checkout --detach v0.2.1
 git describe --tags --exact-match
 ```
 
-The final command must report `v0.2.0`. Do not silently install another branch, tag, prerelease, or version if `v0.2.0` is missing or cannot be verified. Report the blocker and stop.
+The final command must report `v0.2.1`. Do not silently install another branch, tag, prerelease, or version if `v0.2.1` is missing or cannot be verified. Report the blocker and stop.
 
 ## 3. Install and validate
 
@@ -53,7 +53,7 @@ skills/review-watcher/SKILL.md
 fixtures/sample-reviews.json
 ```
 
-Read `package.json` and `.codex-plugin/plugin.json`; both versions must be exactly `0.2.0`. Confirm the manifest's skills path resolves to `skills/review-watcher/SKILL.md` without leaving the repository.
+Read `package.json` and `.codex-plugin/plugin.json`; both versions must be exactly `0.2.1`. Confirm the manifest's skills path resolves to `skills/review-watcher/SKILL.md` without leaving the repository.
 
 When the official Codex plugin and skill validators are available in the environment, run them against the repository root and `skills/review-watcher` respectively. Use the official validators rather than inventing substitute checks. If they are unavailable, report that limitation explicitly.
 
