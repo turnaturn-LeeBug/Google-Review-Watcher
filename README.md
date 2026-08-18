@@ -4,7 +4,7 @@ Review Watcher is an independent open-source Codex plugin that performs read-onl
 
 Review Watcher is not related to Altus or RelayMinders. It is not affiliated with, endorsed by, or sponsored by Google.
 
-Current stable version: `0.2.1`.
+Current development version: `0.2.1-dev`. Latest stable version: `0.2.1`.
 
 ## Quick Start
 
@@ -64,6 +64,21 @@ As a fallback, give Codex [`UPDATE_WITH_CODEX.md`](UPDATE_WITH_CODEX.md) and say
 ```text
 Update Review Watcher for me.
 ```
+
+### Chinese Usage / 中文使用
+
+Review Watcher follows the active conversation language. Chinese setup, settings, checks, and updates use the same language-neutral configuration as English; internal keys remain English. For example:
+
+```text
+设置 Review Watcher
+查看 Review Watcher 设置
+添加另一个商家
+检查我的评论
+检查 Review Watcher 版本
+更新 Review Watcher
+```
+
+使用中文开始流程后，Review Watcher 会继续用中文提问和报告结果。切换到英文不会更改或重置已保存的商家设置。
 
 ## Requirements and installation
 

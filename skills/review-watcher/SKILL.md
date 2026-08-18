@@ -1,11 +1,37 @@
 ---
 name: review-watcher
-description: Conversationally set up, update, and manage one or more Google Business review monitors, check configured listings read-only through the browser, enforce per-business intervals, email optional XLSX reports, and show settings, eligibility, or installed/latest stable versions. Use for intents including "Set up Review Watcher", "Review Watcher settings", "Add another business", "Check my reviews", "Check Review Watcher version", and "Update Review Watcher", including natural update-check variants.
+description: Conversationally set up, update, and manage Google Business review monitors in English or Chinese, following the user's active conversation language while keeping one language-neutral config schema. Use for intents including "Set up Review Watcher", "Review Watcher settings", "Add another business", "Check my reviews", "Check Review Watcher version", "Update Review Watcher", "设置 Review Watcher", "配置 Review Watcher", "查看 Review Watcher 设置", "添加另一个商家", "检查我的评论", "检查 Review Watcher 版本", "Review Watcher 是最新版吗", and "更新 Review Watcher".
 ---
 
 # Review Watcher
 
 Perform conversational configuration and strictly read-only Google review checks. Keep configuration local and never request email or Google passwords.
+
+## Follow the conversation language
+
+Detect the active language from the user's latest substantive message. Use Chinese throughout setup, settings, checks, version checks, and updates when the user writes Chinese; use the existing English workflow when the user writes English. If a message has no language signal, continue in the active language. Allow the user to switch languages without rewriting, translating, or resetting stored settings.
+
+Keep all CLI arguments, configuration keys, enum values, dates, state, and business IDs in the existing English internal format. Do not create a Chinese schema or persist a UI-language field. Translate only prompts, choices, summaries, statuses, and explanations.
+
+Map Chinese intents as follows: `设置 Review Watcher` or `配置 Review Watcher` → setup; `查看 Review Watcher 设置` → settings; `添加另一个商家` → add business; `检查我的评论` → check; `检查 Review Watcher 版本` or `Review Watcher 是最新版吗` → version; `更新 Review Watcher` → update.
+
+## Chinese wording
+
+For Chinese setup, ask these prompts and choices in order:
+
+1. `请粘贴你想监控的 Google 商家或 Google Maps 链接。` Show the visible business name and address, then ask `这是正确的商家吗？`
+2. `你希望从什么时候开始收集评论？` Offer `从今天开始`, `最近 7 天`, or `选择日期`; map them to `today`, `last-7-days`, or an ISO date.
+3. `你希望多久检查一次新评论？` Offer `每天`, `每 3 天`, `每 7 天`, or `自定义`; map them to `1`, `3`, `7`, or a positive integer `minimumIntervalDays`.
+4. `你希望把 XLSX 报告发送到哪个邮箱？` Offer `输入邮箱` or `暂时跳过`.
+5. Show `商家`, `Google 链接`, `开始收集日期`, `检查频率`, `Email`, and `Google 权限：只读`. Ask `确认保存还是修改？` Do not save before confirmation.
+
+For Chinese settings, list all existing businesses in Chinese and ask which single field to edit. Preserve every other field and never rerun full setup for a one-field edit.
+
+For Chinese checks, run the only enabled business directly. With multiple enabled businesses, offer `检查全部` and `选择一个商家`.
+
+For Chinese version checks, show `当前版本`, `最新稳定版`, and `状态`; render statuses as `有可用更新` or `已经是最新版`.
+
+For Chinese updates, show `当前版本`, `可更新版本`, `本地设置：保留`, `评论历史：保留`, `报告：保留`, and `Email 设置：保留`, then ask `是否现在更新？`. On success say `Review Watcher 更新成功。` and show `之前版本`, `当前版本`, plus `商家设置`, `评论历史`, `报告`, and `Email 设置` as `已保留`. Translate failures accurately and preserve the same safety rules as English.
 
 ## Check version
 
