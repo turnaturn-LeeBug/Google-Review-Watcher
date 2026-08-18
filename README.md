@@ -4,7 +4,7 @@ Review Watcher is an independent open-source Codex plugin that performs read-onl
 
 Review Watcher is not related to Altus or RelayMinders. It is not affiliated with, endorsed by, or sponsored by Google.
 
-Current stable version: `0.2.0`.
+Current development version: `0.2.1-dev`. Latest stable version: `0.2.0`.
 
 ## Quick Start
 
@@ -47,6 +47,23 @@ Check my reviews
 ```
 
 `Review Watcher settings` changes only the selected field. `Add another business` preserves existing businesses and creates independent state and report paths. When several businesses are enabled, `Check my reviews` asks whether to check all or select one.
+
+### Update with Codex
+
+Tell Codex:
+
+```text
+Check Review Watcher version
+Update Review Watcher
+```
+
+Codex checks stable releases only by default, stops for tracked source changes, shows the preservation and version summary, and asks before changing versions. It preserves ignored business configuration, review history, reports, `.env`, and SMTP settings. Normal users do not need Git or PowerShell commands.
+
+As a fallback, give Codex [`UPDATE_WITH_CODEX.md`](UPDATE_WITH_CODEX.md) and say:
+
+```text
+Update Review Watcher for me.
+```
 
 ## Requirements and installation
 

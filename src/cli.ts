@@ -7,6 +7,7 @@ import { readConfig } from "./config.js";
 import { getEligibility } from "./eligibility.js";
 import { processReviewFile } from "./process.js";
 import { createSetupDraft, editBusinessSettings, persistSetup } from "./setup.js";
+import { checkVersion, updateReviewWatcher } from "./update.js";
 import type { BusinessConfig, BusinessRunResult, ReviewInput } from "./types.js";
 
 const args = process.argv.slice(2);
@@ -54,6 +55,23 @@ try {
     const result = await processReviewFile(path);
     console.log(`${result.newCount} new reviews`);
     if (result.reportPath) console.log(`Report: ${result.reportPath}`);
+  } else if (command === "version") {
+    const result = await checkVersion(process.cwd());
+    console.log(`Installed: ${result.installed}`);
+    console.log(`Latest stable: ${result.latestStable}`);
+    console.log(`Status: ${result.status === "UP_TO_DATE" ? "Up to date" : result.status === "UPDATE_AVAILABLE" ? "Update available" : "Installed version is newer than latest stable"}`);
+  } else if (command === "update") {
+    const result = await updateReviewWatcher(process.cwd(), args.includes("--confirm"));
+    if (result.status === "ALREADY_UP_TO_DATE") console.log("Review Watcher is already up to date.");
+    else if (result.status === "CONFIRMATION_REQUIRED") {
+      console.log(`Current version: ${result.previousVersion}`); console.log(`Available version: ${result.targetVersion}`);
+      console.log("Local settings: Will be preserved\nReview history: Will be preserved\nReports: Will be preserved\nSMTP environment: Will be preserved");
+      console.log("Update now?");
+    } else {
+      console.log("Review Watcher updated successfully."); console.log(`Previous version: ${result.previousVersion}`);
+      console.log(`Current version: ${result.currentVersion}`); console.log("Business settings: Preserved\nReview history: Preserved\nReports: Preserved\nEmail settings: Preserved");
+      console.log(`Validation stages: ${result.stages.join(", ")}`); console.log("Start a new Codex task if the updated plugin is not immediately rediscovered.");
+    }
   } else if (command === "config") {
     const action = args[1]; const path = option("--config") ?? "config/business.json";
     if (action === "show") console.log(JSON.stringify(await readConfig(path), null, 2));
@@ -103,7 +121,7 @@ try {
   } else if (command === "reset") {
     await rm(resolve("data/seen-reviews.json"), { force: true });
     console.log("Legacy review state reset");
-  } else throw new Error("Usage: pnpm review:process <reviews-json> | pnpm review:configure -- show|add|edit | pnpm review:check [--business id] [--reviews path] | pnpm review:status | pnpm review:eligibility | pnpm review:reset");
+  } else throw new Error("Usage: pnpm review:process <reviews-json> | pnpm review:version | pnpm review:update [--confirm] | pnpm review:configure -- show|add|edit | pnpm review:check [--business id] [--reviews path] | pnpm review:status | pnpm review:eligibility | pnpm review:reset");
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;

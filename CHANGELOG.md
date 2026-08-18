@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.1-dev
+
+- Added conversational stable-version checks and confirmation-gated updates
+- Added dirty-source protection and preservation guarantees for ignored user data
+- Added `UPDATE_WITH_CODEX.md` for Codex-guided updates
+
 ## v0.2.0
 
 ### Added

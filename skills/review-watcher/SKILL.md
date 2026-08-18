@@ -1,11 +1,32 @@
 ---
 name: review-watcher
-description: Conversationally set up and manage one or more Google Business review monitors, check configured listings read-only through the browser, enforce per-business intervals, email optional XLSX reports, and show settings or eligibility. Use for intents including "Set up Review Watcher", "Review Watcher settings", "Add another business", and "Check my reviews".
+description: Conversationally set up, update, and manage one or more Google Business review monitors, check configured listings read-only through the browser, enforce per-business intervals, email optional XLSX reports, and show settings, eligibility, or installed/latest stable versions. Use for intents including "Set up Review Watcher", "Review Watcher settings", "Add another business", "Check my reviews", "Check Review Watcher version", and "Update Review Watcher", including natural update-check variants.
 ---
 
 # Review Watcher
 
 Perform conversational configuration and strictly read-only Google review checks. Keep configuration local and never request email or Google passwords.
+
+## Check version
+
+For `Check Review Watcher version`, `Is Review Watcher up to date?`, or `Check for Review Watcher updates`:
+
+1. Determine the repository root containing this skill and inspect the current package, plugin manifest, Git commit/tag, branch, remote, and source status.
+2. Run `pnpm review:version` from that root. It checks public stable tags at `https://github.com/turnaturn-LeeBug/Google-Review-Watcher` without selecting prereleases.
+3. Report Installed, Latest stable, and Up to date or Update available. Never treat RC, beta, alpha, or another prerelease as latest stable unless the user explicitly requests prereleases.
+
+## Update safely
+
+For `Update Review Watcher`, `Update this plugin`, or `Update Review Watcher to the latest stable version`:
+
+1. Run `pnpm review:update` without confirmation. This inspects the installation path, Git validity, version, branch/tag, remote, source status, and latest public stable tag.
+2. Stop on tracked or unignored source changes. Never reset, stash, overwrite, force checkout, delete, or automatically roll back. Ignored configuration, state, reports, `.env`, SMTP settings, and browser/session data do not block an update and must remain untouched.
+3. If already current, report `Review Watcher is already up to date.` and do not reinstall.
+4. Otherwise show current and available versions plus that settings, review history, reports, and SMTP environment will be preserved. Ask exactly: `Update now?`
+5. Only after explicit confirmation run `pnpm review:update -- --confirm`. Stop at the first failed fetch, tag verification, checkout, install, build, test, audit, plugin validation, skill validation, or version check. Report the exact stage and current checked-out version; never claim success after failure.
+6. On success report old/new versions and preservation results. Tell the user: `Start a new Codex task if the updated plugin is not immediately rediscovered.`
+
+Use only the fixed public repository URL for release discovery and tag fetches. Never print SMTP passwords or send credentials to GitHub. Updating Review Watcher must not access or modify Google.
 
 ## Set up or add a business
 
