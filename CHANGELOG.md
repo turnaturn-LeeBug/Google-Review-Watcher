@@ -2,12 +2,19 @@
 
 ## v0.2.1
 
+### Added
+
 - Added conversational version checking
 - Added conversational stable updates with stable-only release detection
 - Added dirty-tree protection and user-data preservation
 - Added explicit confirmation before an update changes versions
 - Added `UPDATE_WITH_CODEX.md` for Codex-guided updates
 - Added full post-update build, test, plugin, and skill validation
+- Added a Chinese conversational interface
+- Added Chinese setup, settings, and review-check workflows
+- Added Chinese version-check and update workflows
+- Added automatic conversation-language following
+- Added English and Chinese intent support without separate configuration schemas
 
 ## v0.2.0
 
