@@ -13,6 +13,7 @@
 - Optional SMTP XLSX delivery
 - `sendWhenNoNewReviews`
 - Transaction-safe state updates
+- Added Codex-guided installation instructions via `INSTALL_WITH_CODEX.md`.
 
 ### Changed
 

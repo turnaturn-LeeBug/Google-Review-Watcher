@@ -8,6 +8,18 @@ Current stable version: `0.2.0`.
 
 ## Quick Start
 
+Install the stable plugin with Codex, then use the conversational setup flow. Manual JSON editing is an advanced option, not the normal user path.
+
+## Install with Codex
+
+1. Download or open [`INSTALL_WITH_CODEX.md`](INSTALL_WITH_CODEX.md).
+2. Give the file to Codex.
+3. Say: `Install Review Watcher for me.`
+
+Codex will verify prerequisites, install the exact stable release, run validation, and preserve any existing local configuration and state. After installation, continue with the conversational setup below; normal users do not need to edit JSON.
+
+## Conversational setup
+
 The normal user workflow is conversational:
 
 1. Install Review Watcher using the repository instructions below.
